@@ -9,7 +9,7 @@ class Calendar {
   /// If the calendar is read-only
   bool isReadOnly;
 
-  Calendar({this.id, this.name, this.isReadOnly});
+  Calendar({this.name});
 
   Calendar.fromJson(Map<String, dynamic> json) {
     id = json['id'];

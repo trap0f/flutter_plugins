@@ -53,6 +53,11 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
         let attendanceStatus: Int
     }
     
+    struct Source: Codable {
+        let title: String
+        let sourceType: Int
+    }
+    
     struct Reminder: Codable {
         let minutes: Int
     }
@@ -71,6 +76,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
     let hasPermissionsMethod = "hasPermissions"
     let retrieveCalendarsMethod = "retrieveCalendars"
     let retrieveEventsMethod = "retrieveEvents"
+    let retrieveSourcesMethod = "retrieveSources"
     let createOrUpdateEventMethod = "createOrUpdateEvent"
     let deleteEventMethod = "deleteEvent"
     let calendarIdArgument = "calendarId"
@@ -118,6 +124,8 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
             createOrUpdateEvent(call, result)
         case deleteEventMethod:
             deleteEvent(call, result)
+        case retrieveSourcesMethod:
+            retrieveSources(result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -228,6 +236,16 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
         return event
     }
     
+    private func retrieveSources(_ result: @escaping FlutterResult) {
+        checkPermissionsThenExecute(permissionsGrantedAction: {
+            var sources = [Source]()
+            for source in eventStore.sources {
+                sources.append(Source(title: source.title, sourceType: source.sourceType.rawValue))
+            }
+            encodeJsonAndFinish(codable: sources, result: result)
+        }, result: result)
+    }
+    
     private func convertEkParticipantToAttendee(ekParticipant: EKParticipant?) -> Attendee? {
         if ekParticipant == nil || ekParticipant?.emailAddress == nil {
             return nil
@@ -298,7 +316,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
         if recurrenceRuleArguments == nil {
             return nil
         }
-        
+
         let recurrenceFrequencyIndex = recurrenceRuleArguments![recurrenceFrequencyArgument] as? NSInteger
         let totalOccurrences = recurrenceRuleArguments![totalOccurrencesArgument] as? NSInteger
         let interval = recurrenceRuleArguments![intervalArgument] as? NSInteger
