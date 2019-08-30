@@ -1,3 +1,5 @@
+import '../../device_calendar.dart';
+
 /// A calendar on the user's device
 class Calendar {
   /// The unique identifier for this calendar
@@ -9,7 +11,9 @@ class Calendar {
   /// If the calendar is read-only
   bool isReadOnly;
 
-  Calendar({this.name});
+  Source source;
+
+  Calendar({this.name, this.source});
 
   Calendar.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -22,6 +26,8 @@ class Calendar {
     data['id'] = this.id;
     data['name'] = this.name;
     data['isReadOnly'] = this.isReadOnly;
+    data['source'] = source?.toJson();
+
     return data;
   }
 }
