@@ -40,6 +40,8 @@ class Event {
   /// The recurrence rule for this event
   RecurrenceRule recurrenceRule;
 
+  String timeZone; // trap0f
+
   List<Reminder> reminders;
 
   Event(this.calendarId,
@@ -49,7 +51,9 @@ class Event {
       this.end,
       this.description,
       this.attendees,
-      this.recurrenceRule});
+      this.recurrenceRule,
+      this.timeZone // trap0f
+      });
 
   Event.fromJson(Map<String, dynamic> json) {
     if (json == null) {
@@ -60,15 +64,34 @@ class Event {
     calendarId = json['calendarId'];
     title = json['title'];
     description = json['description'];
+    allDay = json['allDay'];
+    timeZone = json['timeZone']; // trap0f
+
     int startMillisecondsSinceEpoch = json['start'];
     if (startMillisecondsSinceEpoch != null) {
-      start = DateTime.fromMillisecondsSinceEpoch(startMillisecondsSinceEpoch);
+      start = DateTime.fromMillisecondsSinceEpoch(
+        startMillisecondsSinceEpoch,
+        isUtc: timeZone == 'UTC', // trap0f
+      );
     }
     int endMillisecondsSinceEpoch = json['end'];
     if (endMillisecondsSinceEpoch != null) {
-      end = DateTime.fromMillisecondsSinceEpoch(endMillisecondsSinceEpoch);
+      // trap0f
+      end = allDay
+          ? DateTime.fromMillisecondsSinceEpoch(
+              endMillisecondsSinceEpoch - 1,
+              isUtc: timeZone == 'UTC',
+            )
+          : DateTime.fromMillisecondsSinceEpoch(
+              endMillisecondsSinceEpoch,
+              isUtc: timeZone == 'UTC',
+            );
+// original
+//      end = DateTime.fromMillisecondsSinceEpoch(
+//        endMillisecondsSinceEpoch,
+//      );
     }
-    allDay = json['allDay'];
+
     location = json['location'];
     if (json['attendees'] != null) {
       attendees = json['attendees'].map<Attendee>((decodedAttendee) {

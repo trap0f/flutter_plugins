@@ -17,6 +17,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
         let id: String
         let name: String
         let isReadOnly: Bool
+        let account: String // trap0f
     }
     
     struct Event: Codable {
@@ -32,6 +33,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
         let recurrenceRule: RecurrenceRule?
         let organizer: Attendee?
         let reminders: [Reminder]
+        let timeZone: String?   // trap0f
     }
     
     struct RecurrenceRule: Codable {
@@ -133,7 +135,12 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
             let ekCalendars = self.eventStore.calendars(for: .event)
             var calendars = [Calendar]()
             for ekCalendar in ekCalendars {
-                let calendar = Calendar(id: ekCalendar.calendarIdentifier, name: ekCalendar.title, isReadOnly: !ekCalendar.allowsContentModifications)
+                let calendar = Calendar(
+                    id: ekCalendar.calendarIdentifier,
+                    name: ekCalendar.title,
+                    isReadOnly: !ekCalendar.allowsContentModifications,
+                    account: ekCalendar.source.title // trap0f
+                )
                 calendars.append(calendar)
             }
             
@@ -151,6 +158,7 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
             var events = [Event]()
             let specifiedStartEndDates = startDateMillisecondsSinceEpoch != nil && endDateDateMillisecondsSinceEpoch != nil
             if specifiedStartEndDates {
+                self.eventStore.refreshSourcesIfNecessary() // trap0f
                 let startDate = Date (timeIntervalSince1970: startDateMillisecondsSinceEpoch!.doubleValue / 1000.0)
                 let endDate = Date (timeIntervalSince1970: endDateDateMillisecondsSinceEpoch!.doubleValue / 1000.0)
                 let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
@@ -223,7 +231,8 @@ public class SwiftDeviceCalendarPlugin: NSObject, FlutterPlugin {
             location: ekEvent.location,
             recurrenceRule: recurrenceRule,
             organizer: convertEkParticipantToAttendee(ekParticipant: ekEvent.organizer),
-            reminders: reminders
+            reminders: reminders,
+            timeZone: ekEvent.timeZone?.identifier  // trap0f
         )
         return event
     }

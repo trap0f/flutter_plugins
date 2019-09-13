@@ -133,6 +133,25 @@ class EventItem extends StatelessWidget {
                       ],
                     ),
                   ),
+                  // trap0f
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: _eventFieldNameWidth,
+                          child: Text('TimeZone'),
+                        ),
+                        Expanded(
+                          child: Text(_calendarEvent?.timeZone ?? ''),
+                        )
+                      ],
+                    ),
+                  ),
+                  // trap0f
                 ],
               ),
             ),

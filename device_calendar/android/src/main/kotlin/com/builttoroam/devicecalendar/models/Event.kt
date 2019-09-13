@@ -13,4 +13,5 @@ class Event {
     var recurrenceRule: RecurrenceRule? = null
     var organizer: Attendee? = null
     var reminders: MutableList<Reminder> = mutableListOf()
+    var timeZone: String? = null    // trap0f
 }

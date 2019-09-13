@@ -1,6 +1,6 @@
 import 'package:device_calendar/device_calendar.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'calendar_events.dart';
 
@@ -69,9 +69,16 @@ class _CalendarsPageState extends State<CalendarsPage> {
                       children: [
                         Expanded(
                           flex: 1,
-                          child: Text(
-                            _calendars[index].name,
-                            style: Theme.of(context).textTheme.subhead,
+                          // trap0f
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                _calendars[index].name,
+                                style: Theme.of(context).textTheme.subhead,
+                              ),
+                              Text(_calendars[index].account), // trap0f
+                            ],
                           ),
                         ),
                         Icon(_calendars[index].isReadOnly

@@ -20,6 +20,8 @@ import com.builttoroam.devicecalendar.common.Constants.Companion.ATTENDEE_STATUS
 import com.builttoroam.devicecalendar.common.Constants.Companion.ATTENDEE_TYPE_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION
 import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION_ACCESS_LEVEL_INDEX
+import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION_ACCOUNT_NAME_INDEX
+import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION_OWNER_ACCOUNT_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION_DISPLAY_NAME_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.CALENDAR_PROJECTION_ID_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTION
@@ -31,6 +33,7 @@ import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTIO
 import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTION_ID_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTION_RECURRING_RULE_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTION_TITLE_INDEX
+import com.builttoroam.devicecalendar.common.Constants.Companion.EVENT_PROJECTION_EVENT_TIMEZONE_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.REMINDER_MINUTES_INDEX
 import com.builttoroam.devicecalendar.common.Constants.Companion.REMINDER_PROJECTION
 import com.builttoroam.devicecalendar.common.DayOfWeek
@@ -467,8 +470,13 @@ class CalendarDelegate : PluginRegistry.RequestPermissionsResultListener {
         val calId = cursor.getLong(CALENDAR_PROJECTION_ID_INDEX)
         val displayName = cursor.getString(CALENDAR_PROJECTION_DISPLAY_NAME_INDEX)
         val accessLevel = cursor.getInt(CALENDAR_PROJECTION_ACCESS_LEVEL_INDEX)
+        val account = cursor.getString(CALENDAR_PROJECTION_ACCOUNT_NAME_INDEX)  //trap0f
 
-        val calendar = Calendar(calId.toString(), displayName)
+        val calendar = Calendar(
+                calId.toString(),
+                displayName,
+                account   // trap0f
+        )
         calendar.isReadOnly = isCalendarReadOnly(accessLevel)
 
         return calendar
@@ -487,6 +495,7 @@ class CalendarDelegate : PluginRegistry.RequestPermissionsResultListener {
         val recurringRule = cursor.getString(EVENT_PROJECTION_RECURRING_RULE_INDEX)
         val allDay = cursor.getInt(EVENT_PROJECTION_ALL_DAY_INDEX) > 0
         val location = cursor.getString(EVENT_PROJECTION_EVENT_LOCATION_INDEX)
+        val timeZone = cursor.getString(EVENT_PROJECTION_EVENT_TIMEZONE_INDEX)  // trap0f
 
         val event = Event()
         event.title = title
@@ -498,6 +507,7 @@ class CalendarDelegate : PluginRegistry.RequestPermissionsResultListener {
         event.allDay = allDay
         event.location = location
         event.recurrenceRule = parseRecurrenceRuleString(recurringRule)
+        event.timeZone = timeZone   // trap0f
         return event
     }
 
